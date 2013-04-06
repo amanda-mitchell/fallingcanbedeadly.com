@@ -1,6 +1,7 @@
 ---
 title: Just switched to SubText 1.9.5
 categories: GoDaddy SubText
+layout: post
 ---
 <p><em>Update: Google Analytics tells me that people are coming to my blog for information about installing Subtext on GoDaddy's servers. Because I'm such a wonderful person, I'm adding instructions for how to do this. (7-4-07)</em></p>
 <p><em>Update 2: Mikeas has posted more detailed instructions on how to modify the Web.config that comes with Subtext, including a couple of things that I had forgotten to mention (like e-mail). You can view his instructions <a href="http://www.redgreenblur.com/blog/archive/2007/07/25/subtext.aspx">here</a>.</em></p>
@@ -14,7 +15,7 @@ categories: GoDaddy SubText
     <ol>
         <li>Open the properties for Content Root and make sure that your ASP.NET version is 2.0. If you have to change it, be aware that it may take some time for GoDaddy to update its servers, and it's not a terribly great idea to upload files to your server until this is done. </li>
         <li>Create a directory (I'm assuming you'll call it 'blog'). Give it Read, Web, Write, and SetRoot permissions. </li>
-        <li>If you want to use <em>Photo Galleries</em> or the <em>MetaWeblog API's MediaObject, </em>you'll also need to create a directory called blog/Images and make sure that it has similar permissions (I haven't actually done this part, since the setup guide at <font face="Arial"><a href="http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx">http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx</a> says it's optional)</font> </li>
+        <li>If you want to use <em>Photo Galleries</em> or the <em>MetaWeblog API's MediaObject, </em>you'll also need to create a directory called blog/Images and make sure that it has similar permissions (I haven't actually done this part, since the setup guide at <a href="http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx">http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx</a> says it's optional) </li>
         <li>Be aware that steps 2 and 3 may take a while to complete on GoDaddy's end. I don't recommend uploading files until the Control Panel says that everything is up to date. </li>
     </ol>
     </li>
@@ -33,17 +34,17 @@ categories: GoDaddy SubText
 <p><font face="Courier New">&lt;%@ Page language="c#" %&gt;<br />
 &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt; </font></p>
 <p><font face="Courier New">&lt;html&gt;<br />
-  &lt;head runat="server"&gt;<br />
-    &lt;title&gt;&lt;/title&gt;<br />
-    &lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;<br />
-    &lt;meta name="CODE_LANGUAGE" Content="C#"&gt;<br />
-    &lt;meta name=vs_defaultClientScript content="JavaScript"&gt;<br />
-    &lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;<br />
-  &lt;/head&gt;<br />
-  &lt;body MS_POSITIONING="GridLayout"&gt;<br />
-    &lt;form id="Form1" method="post" runat="server"&gt;<br />
-  &lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt; <br />
-     &lt;/form&gt;<br />
-  &lt;/body&gt;<br />
+&lt;head runat="server"&gt;<br />
+&lt;title&gt;&lt;/title&gt;<br />
+&lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;<br />
+&lt;meta name="CODE_LANGUAGE" Content="C#"&gt;<br />
+&lt;meta name=vs_defaultClientScript content="JavaScript"&gt;<br />
+&lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;<br />
+&lt;/head&gt;<br />
+&lt;body MS_POSITIONING="GridLayout"&gt;<br />
+&lt;form id="Form1" method="post" runat="server"&gt;<br />
+&lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt; <br />
+&lt;/form&gt;<br />
+&lt;/body&gt;<br />
 &lt;/html&gt;</font></p>
 <p>Anyway, this is how I have my blog set up, and I would assume that it would work for most users, but I make no guarantees to this effect. Let me know how it turns out for you!</p>
