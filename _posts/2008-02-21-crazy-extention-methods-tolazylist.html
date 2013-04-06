@@ -1,0 +1,183 @@
+---
+title: NSDuctTape on Google Code
+layout: post
+categories:
+- .NET
+---
+<p>Way back in November, I promised to show how to optimize my final version of GetPrimes. Today, I give you the solution to the problem:</p>
+
+{% highlight c# %}
+using System;
+using System.Collections.Generic;
+using System.Linq;
+ 
+namespace Utility
+{
+	public static class EnumerableUtility
+	{
+		public static IList<T> ToLazyList<T>(this IEnumerable<T> list)
+		{
+			return new LazyList<T>(list);
+		}
+
+		private class LazyList<T> : IList<T>, IDisposable
+		{
+			public LazyList(IEnumerable<T> list)
+			{
+				_enumerator = list.GetEnumerator();
+				_isFinished = false;
+				_cached = new List<T>();
+			} 
+
+			public T this[int index]
+			{
+				get
+				{
+					if (index < 0)
+						throw new ArgumentOutOfRangeException("index"); 
+					while (_cached.Count <= index && !_isFinished)
+						GetNext();
+					return _cached[index];
+				}
+				set
+				{
+					throw new NotSupportedException();
+				}
+			}
+
+			public int Count
+			{
+				get
+				{
+					Finish();
+					return _cached.Count;
+				}
+			}
+
+			public IEnumerator<T> GetEnumerator()
+			{
+				int current = 0;
+				while (current < _cached.Count || !_isFinished)
+				{
+					if (current == _cached.Count)
+						GetNext();
+					if (current != _cached.Count)
+						yield return _cached[current];
+					current++;
+				}
+			}
+
+			public void Dispose()
+			{
+				_enumerator.Dispose();
+				_isFinished = true;
+			}
+
+			public int IndexOf(T item)
+			{
+				int result = _cached.IndexOf(item);
+				while (result == -1 && !_isFinished)
+				{
+					GetNext();
+					if (_cached.Last().Equals(item))
+						result = _cached.Count - 1;
+				}
+
+				return result;
+			}
+
+			public void Insert(int index, T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void RemoveAt(int index)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void Add(T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			public void Clear()
+			{
+				throw new NotSupportedException();
+			}
+
+			public bool Contains(T item)
+			{
+				return IndexOf(item) != -1;
+			}
+
+			public void CopyTo(T[] array, int arrayIndex)
+			{
+				foreach (var item in this)
+					array[arrayIndex++] = item;
+			}
+
+			public bool IsReadOnly
+			{
+				get { return true; }
+			}
+
+			public bool Remove(T item)
+			{
+				throw new NotSupportedException();
+			}
+
+			System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+			{
+				return GetEnumerator();
+			}
+
+			private void GetNext()
+			{
+				if (!_isFinished)
+				{
+					if (_enumerator.MoveNext())
+					{
+						_cached.Add(_enumerator.Current);
+					}
+					else
+					{
+						_isFinished = true;
+						_enumerator.Dispose();
+					}
+				}
+			}
+
+			private void Finish()
+			{
+				while (!_isFinished)
+					GetNext();
+			} 
+
+			readonly List<T> _cached;
+			readonly IEnumerator<T> _enumerator;
+			bool _isFinished;
+		}
+	}
+}
+{% endhighlight %}
+
+<p>Essentially, what the above code does is to wrap an IEnumerable&lt;T&gt; in a layer that disguises it as an IList&lt;T&gt;. Any value that we evaluate is automatically cached for easy lookup later, but we also don't evaluate values until they are specifically demanded.</p>
+
+<p>The implication of this is that you no longer have to choose between caching all of your values up front and evaluating them lazily&amp;emdash;you can have both with relatively little overhead.</p>
+
+<p>Returning to our example of computing primes, if we simply replace this line:</p>
+
+{% highlight c# %}
+primes = knownPrimes.Concat(computedPrimes)
+{% endhighlight %}
+
+<p>With this one:</p>
+
+{% highlight c# %}
+primes = knownPrimes.Concat(computedPrimes).ToLazyList();
+{% endhighlight %}
+
+<p>Then everything is suddenly fine, and we can compute primes at a very rapid rate.</p>
+
+<div class="wlWriterSmartContent" id="scid:0767317B-992E-4b12-91E0-4F059A8CECA8:b74d0556-3055-4fb5-9cce-604d4b6e65cd" style="PADDING-RIGHT: 0px; DISPLAY: inline; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px">Technorati Tags: <a rel="tag" href="http://technorati.com/tags/.net">.net</a>,<a rel="tag" href="http://technorati.com/tags/C%23+3.0">C# 3.0</a>,<a rel="tag" href="http://technorati.com/tags/extension%20methods">extension methods</a></div>
