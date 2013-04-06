@@ -6,8 +6,8 @@ layout: post
 <p><em>Update: Google Analytics tells me that people are coming to my blog for information about installing Subtext on GoDaddy's servers. Because I'm such a wonderful person, I'm adding instructions for how to do this. (7-4-07)</em></p>
 <p><em>Update 2: Mikeas has posted more detailed instructions on how to modify the Web.config that comes with Subtext, including a couple of things that I had forgotten to mention (like e-mail). You can view his instructions <a href="http://www.redgreenblur.com/blog/archive/2007/07/25/subtext.aspx">here</a>.</em></p>
 <p>I used to be on dasBlog, but it was difficult to install onto GoDaddy's servers, and the version I was using didn't have support for ASP.NET 2.0 (which is needed for some other development that I want to do), so I switched to SubText.</p>
-<p>With any luck, I'll actually get around to posting real content here in the future...</p>
-<p><strong>Installing SubText on GoDaddy's Servers</strong></p>
+<p>With any luck, I'll actually get around to posting real content here in the future&hellip;</p>
+<p><h4>Installing SubText on GoDaddy's Servers</h4></p>
 <p>This wasn't originally what I had intended to blog about, but it seems to be why people are coming to my site right now, so here's how I did it. For the sake of completeness, I'm using GoDaddy's Deluxe Windows Hosting for this site, and it runs me about seven bucks a month.</p>
 <ol>
     <li>Log into your GoDaddy account; then, go to My Account -&gt; Hosting &amp; Servers -&gt; My hosting account -&gt; Open Control Panel. </li>
@@ -31,7 +31,9 @@ layout: post
 </ol>
 <p>A note about automatic redirecting:</p>
 <p>For whatever reason, GoDaddy has elected to not allow you to change the ASP.Net permissions on your root folder, and 404 redirects won't work for visiting http://yourdomain.sometld/. If, like me, your blog is the primary content on your site, and this is the first thing that you'd like visitors to see, you can configure a Default.aspx that will redirect people to http://yourdomain.sometld/blog. Here's what mine looks like:</p>
-<pre><code>&lt;%@ Page language="c#" %&gt;
+
+{% highlight aspx-cs %}
+&lt;%@ Page language="c#" %&gt;
 &lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt;
 
 &lt;html&gt;
@@ -47,6 +49,7 @@ layout: post
 			&lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt;
 		&lt;/form&gt;
 	&lt;/body&gt;
-&lt;/html&gt;</pre></code>
+&lt;/html&gt;
+{% endhighlight %}
 
 <p>Anyway, this is how I have my blog set up, and I would assume that it would work for most users, but I make no guarantees to this effect. Let me know how it turns out for you!</p>
