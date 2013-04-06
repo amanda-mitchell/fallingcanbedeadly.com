@@ -1,0 +1,26 @@
+---
+title: Announcing NSDuctTape
+layout: post
+categories:
+- .NET
+- Macintosh
+- Mono
+- NSDuctTape
+---
+<p>About a year ago, I started looking for a way to create applications for OS X using the .NET Framework. I found a couple of alternatives, such as <a href="http://www.cocoasharp.org/">Cocoa#</a> and <a href="http://www.imeem.com/developers.aspx">Dumbarton</a>, but neither of them seemed to be quite what I was looking for.</p>
+
+<p>Cocoa# is a project that aims, first and foremost, to create CLR wrappers for most of the classes in the Cocoa library and secondarily, to allow developers to craft classes that are capable of being accessed by Objective C runtime. At first, this sounded like exactly what I wanted--until I realized that Cocoa strongly encourages the use of the Model-View-Controller pattern in its applications, meaning that most of the code written for such an application would be classes that Objective C would be accessing. While the wrappers are cool, the overhead required to create a class that is consumable by the Objective C runtime makes it less than appealing.</p>
+
+<p>Next, I turned to Dumbarton. However, I quickly turned away when I realized that applications using Dumbarton are required to host mono in such a way as to require the application to be released under the GPL <em>[Update: Paolo Molaro, a significant contributor to the Mono project, informs me that this statement is inaccurate. In any case, I would still argue that the issue is confusing enough that many would shy away from using Dumbarton, even if there really is no licensing requirement]</em>.  I have nothing against using (or contributing to) GPLed software, but I don't really want to be tied down to it as soon as I begin developing an application.</p>
+
+<p>What was I to do? I looked into contributing to Cocoa#, but its design philosophy is completely different from my own, and I quickly realized that if I wanted to be happy with the result, I would have to write my own library from scratch.</p>
+
+<p>So I did.</p>
+
+<p>I'm posting a very early release of my new library, NSDuctTape, on the website, today. My goal in designing the application was to remove as much friction as possible from the process of designing Model and Controller classes, with the understanding that most views will be defined using Apple's Interface Builder. Today's release supports Models pretty well, and it also supports bindings from Cocoa objects to CLR object properties, so Controllers aren't even always necessary.</p>
+
+<p>I'll post a tutorial soon, but for the moment, you can <a href="http://code.google.com/p/nsducttape/">download</a> it.</p>
+
+<p>Stay tuned for more!</p>
+
+<div class="wlWriterSmartContent" id="scid:0767317B-992E-4b12-91E0-4F059A8CECA8:f03c6d8a-7936-4af8-bc3b-ffdf5424ea65" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px">Technorati Tags: <a href="http://technorati.com/tags/nsducttape" rel="tag">nsducttape</a>,<a href="http://technorati.com/tags/mac" rel="tag">mac</a>,<a href="http://technorati.com/tags/mono" rel="tag">mono</a>,<a href="http://technorati.com/tags/.net" rel="tag">.net</a></div>
