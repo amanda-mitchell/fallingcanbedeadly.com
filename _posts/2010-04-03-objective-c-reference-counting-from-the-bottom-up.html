@@ -1,0 +1,71 @@
+---
+title: Objective-C Reference Counting From the Bottom Up
+layout: post
+categories: Macintosh
+---
+<p>I've been interviewing a lot of Objective-C developers, lately. In my mind, one of the most fundamental parts of working with Objective-C is understanding how reference counting works, and I'm consistently surprised by how many people are unable to clearly describe it. In this post, I'll outline the absolute minimum that anyone working with Objective-C ought to know about reference counting. If you find yourself in an interview with me, and you can describe everything in this blog post, <del>I'll know where you got your information</del> you'll be doing better than most.</p>
+
+<h3>The Basics</h3>
+
+<p>Objective-C objects are reference counted. This means that each object comes with a little counter, and anyone can modify the value of this counter by calling retain (to increase the value) or release (to decrease the value). When the value of the counter reaches 0, the dealloc method is called on the object, and any memory associated with the object is reclaimed by the system.</p>
+
+<p>A good developer will make use of this system by calling retain on objects whose pointers are being stored in other objects and calling release on those objects when the pointer no longer needs to be stored. This is, in fact, the reason that we call it "reference counting": the counter is intended to indicate how many objects (or, in some cases, global variables) are holding references to the object.</p>
+
+<h3>Deadly Embraces and Retain Cycles</h3>
+
+<p>When two objects each call retain on the other, we call it a "deadly embrace": if no other action is taken, the objects will never be deallocated. This is widely regarded as a "bad thing".</p>
+
+<p>When this sort of pattern occurs with more than two objects (for example, A retains B, B retains C, and C retains A), it is called a "retain cycle", and these can be even nastier to deal with.</p>
+
+<p>Deadly embraces and retain cycles are dealt with by either preventing one object in the cycle from retaining its "parent" or by having explicit cleanup logic that is executed when it is certain that the objects are no longer needed. Really elite developers sometimes create proxy objects to stand in for one of the objects, although a full discussion of this technique is beyond the scope of this post.</p>
+
+<h3>Autorelease</h3>
+
+<p>The autorelease method is perhaps the most widely misunderstood concept in Objective-C memory management, although in practice, it's actually relatively simple.</p>
+
+<p>At the beginning of each iteration through your application's run loop, an NSAutoreleasePool is created. At the end of each iteration it is destroyed. You can also create and destroy NSAutoreleasePools anytime you wish to do so (for example, you generally need to manually create and destroy them in background threads; more on this, later).</p>
+
+<p>When you call autorelease on an object, the object searches for the most recently created NSAutoreleasePool in its thread. Assuming that it finds a pool, it adds itself to the list of objects that need to be released. When the NSAutoreleasePool is destroyed, it calls release on each object that is in its list--if an object is listed multiple times, release is called multiple times. If the object fails to find an NSAutoreleasePool, a message is logged to the console and the object is leaked (this is why you need to create an NSAutoreleasePool when doing work on a background thread).</p>
+
+<h3>Ownership and Object Creation</h3>
+
+<p>While the notion of "ownership" is not baked into the semantics of Objective-C, one object can be thought to "own" another if it has called retain on the object or has created an instance of the object via the alloc or copy methods. An object that owns another is responsible for calling release on that object when it is no longer needed.</p>
+
+<p>This brings us to an interesting question: what should be done for a method that creates an object but isn't called alloc or copy? In order for the object to be active, its retain count must be at least 1, but the calling method cannot be relied upon to call release.</p>
+
+<p>The answer, of course, is to use the autorelease method. This allows the retain count to be a non-zero value when the method returns, and if nothing is done to keep the object alive, it will be reclaimed when the active NSAutoreleasePool is destroyed.</p>
+
+<h3>Property Getters and Setters</h3>
+
+<p>Care must be taken when writing a method that sets a property value. The naive implementation of such a method looks like this:</p>
+
+{% highlight objc %}
+- (void)setProperty:(id)value
+{
+	[propertyField release];
+	propertyField = [value retain];
+}
+{% endhighlight %}
+
+<p>This is bad: if value is the same as propertyField, and the retain count of this object is 1 when we enter the method, the first line of the method will cause the object to be deallocated, and the second line will cause bad things to happen (although bad stuff may not happen immediately, which is worse).</p>
+
+<p>This problem can be worked around by retaining value before releasing propertyField, by ensuring that the values are not equal to each other before performing the operation, or even by autoreleasing propertyField instead of releasing it (although this adds overhead).</p>
+
+<p>Another interesting problem in this space involves methods that get property values. Again, the naive implementation of such a method looks like this:</p>
+
+{% highlight objc %}
+- (id)property
+{
+  return propertyField;
+}
+{%endhighlight %}
+
+<p>99 times out of a hundred, this will work fine. This of course means that when you run into that one time it doesn't work, it's going to be a huge pain to debug. Here's the case in which you can get into trouble:</p>
+
+{% highlight objc %}
+id foo = [obj property];
+[obj setProperty:bar];
+[foo doSomething];
+{% endhighlight %}
+
+<p>If the retain count of propertyField is 1 at the beginning of this block, then the second line will cause it to drop down to zero and be reclaimed. This means that the third line will be performed on an object that has been deallocated, which is, to say the least, less than ideal. The solution to this is to modify the property getter so that it calls retain <em>and</em> autorelease on propertyField before returning it. This has no net effect on the retain count of the object, but it does ensure that the object will stay alive at least until the active NSAutoreleasePool goes out of scope.</p>
