@@ -1,0 +1,171 @@
+---
+title: 'Applications of Iterate()'
+layout: post
+categories:
+- .NET
+---
+<p>Since the code snippets in my previous post consisted mostly of vague hand-waving, I thought it would be good to spend some time today showing how Iterate() can be useful in common algorithms. Consider a fairly standard prime number generator:</p>
+
+{% highlight c# %}
+public static class Primes 
+{
+	public static IEnumerable<ulong> GetPrimes(ulong max)
+	{
+		var list = new List<ulong> { 2 };
+		for (ulong candidate = 3; candidate < max; candidate += 2)
+		{
+			var sqrt = (ulong)Math.Sqrt(candidate);
+			bool isPrime = true;
+			foreach (var prime in list)
+			{
+				if (prime > sqrt)
+					break;
+
+				if (candidate % prime == 0)
+				{
+					isPrime = false;
+					break;
+				}
+			}
+
+			if (isPrime)
+				list.Add(candidate);
+		}
+
+		return list;
+	}
+}
+{% endhighlight %}
+
+<p>Surely, one could provide additional optimizations to this routine, but it will serve our purposes as it is. So where do we start? The easiest simplification is to get rid of the inner loop because it is already characterized as an operation on a collection. Let's begin by moving the first breaking condition out of the loop:</p>
+
+{% highlight c# %}
+var smallPrimes = list.TakeWhile(n => n <= sqrt);
+foreach (var prime in smallPrimes)
+{
+	if (candidate % prime == 0)
+	{
+		isPrime = false;
+		break;
+	}
+}
+{% endhighlight %}
+
+<p>Having done this, it now becomes clear that we are verifying a condition against all elements of a collection. We can rewrite this as:</p>
+
+{% highlight c# %}
+bool isPrime = list.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0);
+{% endhighlight %}
+
+<p>Of course, now that we're only using isPrime in one place after its definition, we may as well not have it as a temporary variable:</p>
+
+{% highlight c# %}
+for (ulong candidate = 3; candidate < max; candidate += 2)
+{
+	var sqrt = (ulong)Math.Sqrt(candidate);
+
+	if (list.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0))
+		list.Add(candidate);
+}
+{% endhighlight %}
+
+<p>These are fine modifications, but they may have left you wondering when Iterate() becomes useful. To demonstrate this, let's begin by applying it in the most obvious place:</p>
+
+{% highlight c# %}
+public static IEnumerable<ulong> GetPrimes(ulong max)
+{
+	var list = new List<ulong> { 2 };
+
+	var candidates = EnumerableUtility.Iterate<ulong>(3, n => n <= max, n => n + 2);
+	foreach (var candidate in candidates)
+	{
+		var sqrt = (ulong)Math.Sqrt(candidate);
+
+		if (list.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0))
+			list.Add(candidate);
+	}
+
+	return list;
+}
+{% endhighlight %}
+
+<p>Well, that doesn't make our code clearer, shorter, or more efficient! However, having a foreach loop <em>does</em> make it clearer that we are performing a filter operation on the collection before actually doing anything with the values:</p>
+
+{% highlight c# %}
+public static IEnumerable<ulong> GetPrimes(ulong max)
+{
+	var list = new List<ulong> { 2 };
+
+	var candidates = EnumerableUtility.Iterate<ulong>(3, n => n <= max, n => n + 2);
+
+	var primes = candidates.Where(
+		candidate =>
+		{
+			var sqrt = (ulong)Math.Sqrt(candidate);
+			return list.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0);
+		});
+
+	foreach (var prime in primes)
+		list.Add(prime);
+
+	return list;
+}
+{% endhighlight %}
+
+<p>As an aside, if you're not yet comfortable with closures, you may be a bit unsettled by the ordering of statements in this snippet: it appears as if we are checking the list of primes before we have actually populated it! Rest assured that this is not the case: the Where() function, as it is implemented in System.Core.Enumerable, does not calculate the next value in its result until that value is actually requested. Because we never request a new value until we've added all previous values to the list, we have nothing to fear (note, on the other hand, that other implementations of Where(), such as the one included the upcoming ParallelFX library, may not share this implementation detail, so be sure you're using the right one!).</p>
+
+<p>It would seem that we are near the end of possible refactorings for this routine. However, to believe this is to forget that we are not required to calculate all the values in the list ourselves! Getting rid of list, we finally arrive at this:</p>
+
+{% highlight c# %}
+public static IEnumerable<ulong> GetPrimes(ulong max)
+{
+  var knownPrimes = new ulong[] { 2, 3 };
+
+  var candidates = EnumerableUtility.Iterate<ulong>(5, n => n <= max, n => n + 2);
+
+  IEnumerable<ulong> primes = null;
+  var computedPrimes = candidates.Where(
+    candidate =>
+    {
+      var sqrt = (ulong)Math.Sqrt(candidate);
+      return primes.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0);
+    });
+
+  primes = knownPrimes.Concat(computedPrimes);
+
+  return primes;
+}
+{% endhighlight %}
+
+<p>Once again, we have a rather clever use of closures, but I hope this one isn't quite as jarring as the last one might have been. While it may at first appear that we are using primes before it has been assigned a real value, recall that the evaluation of Where() does not occur until values are requested from it, which no longer even happens in this function.</p>
+
+<p>It is also perhaps worth noting that our list of known primes has expanded to include 3. The reason for this is that failure to do so would cause infinite recursion when attempting to access the first value in computedPrimes. If it doesn't seem obvious to you, try it and see for yourself :).</p>
+
+<p>One significant benefit to this latest refactoring is that we now only calculate each prime upon demand. Because of this, we may as well compute all primes from 1 to ulong.MaxValue, and forget about the max parameter:</p>
+
+{% highlight c# %}
+public static IEnumerable<ulong> GetPrimes()
+{
+	var knownPrimes = new ulong[] { 2, 3 };
+
+	var candidates = EnumerableUtility.Iterate<ulong>(3, n => n != ulong.MaxValue, n => n + 2).Select(n => n + 2);
+
+	IEnumerable<ulong> primes = null;
+	var computedPrimes = candidates.Where(
+		candidate =>
+		{
+			var sqrt = (ulong)Math.Sqrt(candidate);
+			return primes.TakeWhile(n => n <= sqrt).All(n => candidate % n != 0);
+		});
+
+	primes = knownPrimes.Concat(computedPrimes);
+
+	return primes;
+}
+{% endhighlight %}
+
+<p>Aside from removing max, our only significant change has been to candidates, which is now defined as all odd numbers from 5 to ulong.MaxValue (the trickiness with the call to Select() is to keep ourselves from trying to go past MaxValue).</p>
+
+<p>While we now have some beautiful code, you may have noticed that the last two snippets run significantly more slowly than their fully imperative counterparts. The reason for this is that we are no longer caching our prime numbers, so whenever we have to iterate through the list, all primes must be recalculated. Does this mean that we are doomed? Certainly not! In fact, a very minor change to this code is all that is necessary, but the details will have to wait until the next post.</p>
+
+<div class="wlWriterSmartContent" id="scid:0767317B-992E-4b12-91E0-4F059A8CECA8:9a656fba-d586-4d3f-a102-a6ef4f125e66" style="padding-right: 0px; display: inline; padding-left: 0px; padding-bottom: 0px; margin: 0px; padding-top: 0px">Technorati Tags: <a href="http://technorati.com/tags/functional%20programming" rel="tag">functional programming</a>,<a href="http://technorati.com/tags/C#%203.0" rel="tag">C# 3.0</a>,<a href="http://technorati.com/tags/.net" rel="tag">.net</a></div>
