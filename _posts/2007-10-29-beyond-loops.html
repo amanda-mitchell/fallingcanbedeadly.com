@@ -1,0 +1,80 @@
+---
+title: Beyond Loops
+layout: post
+categories:
+- .NET
+---
+<p>Lately, I've been reading quite a bit about the functional programming concepts that are finally coming to C#. The benefits of this new hybrid (imperative/functional) style are numerous, from greater readability (for those who grasp the new idioms, anyway) to more convenient parallelization. However, I've seen very little about the advantage that excites me most: eliminating loops.</p>
+
+<p><strong>What?!</strong></p>
+
+<p>Okay, I'm not really advocating that we actually stop writing code that contains loops—after all, the most reasonable alternative to loops is recursion, and recursion hurts my brain. I am instead suggesting that the time has come for most of our loops to be abstracted away, and here is my first attempt at hiding them:</p>
+
+{% highlight c# %}
+public static class EnumerableUtility
+{
+	public static IEnumerable<T> Iterate<T>(T initial, Func<T, bool> fnContinue, Func<T, T> fnNext)
+	{
+		for (T current = initial; fnContinue(current); current = fnNext(current))
+			yield return current;
+	}
+
+	public static void ApplyToAll<T>(this IEnumerable<T> list, Action<T> fnAction)
+	{
+		foreach (T item in list)
+			fnAction(item);
+	}
+}
+{% endhighlight %}
+
+<p><em>(Note: Did It With .NET <a href="http://diditwith.net/2007/09/20/BuildingFunctionsFromFunctionsPart1PartialApplication.aspx">defines a similar function</a>, Sequence(), that operates similarly but specifies the arguments in a different order. I prefer my function, but mine could be replaced by his by calling Sequence(initial, fnContinue, fnNext). Either way, the effect is the same.) </em></p>
+
+<p>Why is this so great? All I really did was put a couple loops into a function, right? Well&hellip;sort of, but if you'll stick with me, I think that you'll see that these functions have some significant advantages.</p>
+
+<h4>The Problem</h4>
+
+<p>In order to compute very much that is of interest to anyone, a language must support sequence, choice, and repetition. When taken in isolation, each of these concepts is easy to grasp, but when combined, they can very quickly exceed the limits of human comprehension. Personally, I find that a few big loops will tax my abilities faster than either of the other two structures, but I also find that repetition tends to be the least frequently abstracted of the three basic constructs.</p>
+
+<h4>New Paradigm</h4>
+
+<p>Let's look at some code:</p>
+
+{% highlight c# %}
+var somethingOrOther = initialValue;
+while (SomeCondition(somethingOrOther))
+{
+	if (SomeOtherCondition(somethingOrOther))
+		DoStuff(somethingOrOther);
+	somethingOrOther = GetNext(somethingOrOther);
+}
+{% endhighlight %}
+
+<p>Or its common counterpart:</p>
+
+{% highlight c# %}
+for (var somethingOrOther = initialValue; SomeCondition(somethingOrOther); somethingOrOther = GetNext(somethingOrOther)))
+{
+  if (SomeOtherCondition(somethingOrOther))
+    DoStuff(somethingOrOther);
+}
+{% endhighlight %}
+
+<p>The details and complexity vary, but I've seen code like this many times in my (admittedly short) career. We've been trained to accept such things as normal, but is this really as good as it gets? Here are some of the issues I see:</p>
+
+<ul>
+	<li>If the code is sufficiently complex, it becomes difficult to determine with certainty where somethingOrOther is assigned—especially if the original developer was undisciplined.</li>
+	<li>In the case of the first example, we have an iterator left outside the scope of the loop, which is just asking for trouble.</li>
+	<li>We're mixing repetition and choice, which will lead to confusion as the complexity of the loop grows.</li>
+</ul>
+
+<p>However, the operations defined in EnumerableUtility allow us to think of this as a series of operations on a list, rather than as a loop:</p>
+
+{% highlight c# %}
+var items = EnumerableUtility.Iterate(initialValue, SomeCondition, GetNext);
+items = items.Where(SomeOtherCondition);
+items.ApplyToAll(DoStuff);
+{% endhighlight %}
+
+<p>How is this better? First of all, the second and third operations now appear as a single operation or a list, rather than as a series of operations or individual items—and I find this to be easier on my mental model. Second, we no longer have to concern ourselves about strange assignments to our iterator because the iterator itself has been abstracted away! Finally, having all of the primary operations (enumerating the values, filtering them, and performing an operation on the remaining values) separated from each other allows us to consider each in isolation, which is significantly easier on the brain. </p>
+
+<p>Next time, I intend to introduce some common algorithms and show how using lists instead of loops can simplify their implementation. </p>
