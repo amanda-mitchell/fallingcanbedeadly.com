@@ -18,18 +18,18 @@ Here's how I do it:<br />
 <br />
 Prerequisites:<br />
 <ul>
-    <li>Install Mac OS X--this one's kind of a no-brainer, but just for the record, I'm currently running version 10.4.10. This is the case both for my first-generation Mac Mini and my Mac Pro.</li>
-    <li>Install XCode--again, this shouldn't be too surprising, but I'm aiming for completeness, here :).</li>
-    <li>Install Fink--I've found that this is the best way to get a lot of the common Unix tools you'll need along the way. Personally, I prefer using <a href="http://finkcommander.sourceforge.net/">FinkCommander</a>, which puts a nice GUI on top of Fink. Be sure to follow all of the installation instructions on their website, or things can go mysteriously and confusingly wrong.</li>
+    <li>Install Mac OS X—this one's kind of a no-brainer, but just for the record, I'm currently running version 10.4.10. This is the case both for my first-generation Mac Mini and my Mac Pro.</li>
+    <li>Install XCode—again, this shouldn't be too surprising, but I'm aiming for completeness, here :).</li>
+    <li>Install Fink—I've found that this is the best way to get a lot of the common Unix tools you'll need along the way. Personally, I prefer using <a href="http://finkcommander.sourceforge.net/">FinkCommander</a>, which puts a nice GUI on top of Fink. Be sure to follow all of the installation instructions on their website, or things can go mysteriously and confusingly wrong.</li>
     <li>Install pkg-config, glib2-dev, and svn-client; you can get these through Fink.</li>
-    <li>Install and install an <a href="http://mono-project.com/downloads">official distribution of Mono</a>--sometimes it comes in handy.</li>
+    <li>Install and install an <a href="http://mono-project.com/downloads">official distribution of Mono</a>—sometimes it comes in handy.</li>
 </ul>
 The actual work:<br />
 <ol>
     <li>Create a folder for your mono source. For the purpose of these instructions, I'll assume you're going to put it in <span style="font-family: courier new;">~/src/mono</span>.</li>
     <li>Open a Terminal window and go to <span style="font-family: courier new;">~/src/mono</span>. Run the command <span style="font-family: courier new;">svn checkout svn://anonsvn.mono-project.com/source/trunk/mono svn://anonsvn.mono-project.com/source/trunk/mcs<span style="font-family: arial;">. This will download the code for the core Mono libraries and the Mono Compiler System. They'll end up in <span style="font-family: courier new;">~/src/mono/mono</span> and <span style="font-family: courier new;">~/src/mono/mcs</span>.</span></span></li>
     <li><span style="font-family: courier new;"><span style="font-family: arial;">Create a folder into which you can install your custom build. I put mine in <span style="font-family: courier new;">/opt/mono</span>.</span></span></li>
-    <li><span style="font-family: courier new;"><span style="font-family: arial;">Run the command <span style="font-family: courier new;">cd ~/src/mono/mono &amp;&amp; ./autogen.sh --prefix=/opt/mono</span>. This step should get Mono ready to build.</span></span></li>
+    <li><span style="font-family: courier new;"><span style="font-family: arial;">Run the command <span style="font-family: courier new;">cd ~/src/mono/mono &amp;&amp; ./autogen.sh —prefix=/opt/mono</span>. This step should get Mono ready to build.</span></span></li>
     <li><span style="font-family: courier new;"><span style="font-family: arial;">You're now ready to build and install: <span style="font-family: courier new;">make &amp;&amp; make install</span>. I'd love to be able to recommend that you also insert <span style="font-family: courier new;">make check</span> in that list, but the sad fact is that Mono on MacOS actually fails a number of tests.</span></span></li>
 </ol>
 After you've done all this, you should have a working (custom) build of Mono working on your machine. You can, at any time, upgrade to the latest code by going to <span style="font-family: courier new;">~/src/mono</span> and running the command <span style="font-family: courier new;">svn update mono mcs</span>. Generally, you'll be able to jump straight to building Mono again, but you may sometimes be required to also run <span style="font-family: courier new;">autogen.sh</span>.<br />
