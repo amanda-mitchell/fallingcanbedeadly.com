@@ -1,0 +1,49 @@
+---
+title: Just switched to SubText 1.9.5
+categories: GoDaddy SubText
+---
+<p><em>Update: Google Analytics tells me that people are coming to my blog for information about installing Subtext on GoDaddy's servers. Because I'm such a wonderful person, I'm adding instructions for how to do this. (7-4-07)</em></p>
+<p><em>Update 2: Mikeas has posted more detailed instructions on how to modify the Web.config that comes with Subtext, including a couple of things that I had forgotten to mention (like e-mail). You can view his instructions <a href="http://www.redgreenblur.com/blog/archive/2007/07/25/subtext.aspx">here</a>.</em></p>
+<p>I used to be on dasBlog, but it was difficult to install onto GoDaddy's servers, and the version I was using didn't have support for ASP.NET 2.0 (which is needed for some other development that I want to do), so I switched to SubText.</p>
+<p>With any luck, I'll actually get around to posting real content here in the future...</p>
+<p><strong>Installing SubText on GoDaddy's Servers</strong></p>
+<p>This wasn't originally what I had intended to blog about, but it seems to be why people are coming to my site right now, so here's how I did it. For the sake of completeness, I'm using GoDaddy's Deluxe Windows Hosting for this site, and it runs me about seven bucks a month.</p>
+<ol>
+    <li>Log into your GoDaddy account; then, go to My Account -&gt; Hosting &amp; Servers -&gt; My hosting account -&gt; Open Control Panel. </li>
+    <li>Go to Settings -&gt; ASP.NET Runtime
+    <ol>
+        <li>Open the properties for Content Root and make sure that your ASP.NET version is 2.0. If you have to change it, be aware that it may take some time for GoDaddy to update its servers, and it's not a terribly great idea to upload files to your server until this is done. </li>
+        <li>Create a directory (I'm assuming you'll call it 'blog'). Give it Read, Web, Write, and SetRoot permissions. </li>
+        <li>If you want to use <em>Photo Galleries</em> or the <em>MetaWeblog API's MediaObject, </em>you'll also need to create a directory called blog/Images and make sure that it has similar permissions (I haven't actually done this part, since the setup guide at <font face="Arial"><a href="http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx">http://www.subtextproject.com/Home/About/Docs/Installation/tabid/111/Default.aspx</a> says it's optional)</font> </li>
+        <li>Be aware that steps 2 and 3 may take a while to complete on GoDaddy's end. I don't recommend uploading files until the Control Panel says that everything is up to date. </li>
+    </ol>
+    </li>
+    <li>Go to Databases -&gt; SQL Server
+    <ol>
+        <li>Create a database that uses SQL Server 2005. Most of the settings won't matter a whole lot, but you'll want to make sure that you remember the password, at least for a few minutes. :) </li>
+        <li>Once the database is set up, grab the ODBC connections string for your new database (you can find this by going to the details page of the new database and clicking the configuration button). Remove the "Driver" attribute from this string, and put your password into it. </li>
+    </ol>
+    </li>
+    <li>Modify Subtext's Web.Config file and insert the connection string that you got in step 3. The location for this should be somewhere around line 40. The name of the string is "subtextData". </li>
+    <li>Once GoDaddy is done setting up all of your directories and databases, ftp to your site and upload all of your content into /blog. </li>
+    <li>Navigate to http://yourdomain.sometld/blog. Subtext should make the rest of the process easy. </li>
+</ol>
+<p>A note about automatic redirecting:</p>
+<p>For whatever reason, GoDaddy has elected to not allow you to change the ASP.Net permissions on your root folder, and 404 redirects won't work for visiting http://yourdomain.sometld/. If, like me, your blog is the primary content on your site, and this is the first thing that you'd like visitors to see, you can configure a Default.aspx that will redirect people to http://yourdomain.sometld/blog. Here's what mine looks like:</p>
+<p><font face="Courier New">&lt;%@ Page language="c#" %&gt;<br />
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt; </font></p>
+<p><font face="Courier New">&lt;html&gt;<br />
+  &lt;head runat="server"&gt;<br />
+    &lt;title&gt;&lt;/title&gt;<br />
+    &lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;<br />
+    &lt;meta name="CODE_LANGUAGE" Content="C#"&gt;<br />
+    &lt;meta name=vs_defaultClientScript content="JavaScript"&gt;<br />
+    &lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;<br />
+  &lt;/head&gt;<br />
+  &lt;body MS_POSITIONING="GridLayout"&gt;<br />
+    &lt;form id="Form1" method="post" runat="server"&gt;<br />
+  &lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt; <br />
+     &lt;/form&gt;<br />
+  &lt;/body&gt;<br />
+&lt;/html&gt;</font></p>
+<p>Anyway, this is how I have my blog set up, and I would assume that it would work for most users, but I make no guarantees to this effect. Let me know how it turns out for you!</p>
