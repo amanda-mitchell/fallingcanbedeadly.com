@@ -1,0 +1,45 @@
+<p><i>Update: the process for building Mono has changed significantly since I first wrote this. You can view updated instructions <a href='http://fallingcanbedeadly.com/posts/building-mono-on-mac-os-x-2011-edition'>here</a>.</i></p>
+Ever since I first heard about Mono, I've been fascinated by the potential of .NET to become a viable platform for software that targets multiple OSes. Unfortunately, I've discovered (as seems to be the case with many OSS projects), the documentation aimed towards beginners is quite limited, especially when one ventures away from running Mono on Linux.<br />
+<br />
+I've spent many hours trying to get my development environment for the Mac just right, and at times, it's been a rather painful process. So, in the interest of reducing the pain felt by any beginners following after me, I've decided to start recording my processes for getting things set up. At best, this blog will become a useful resource for anyone doing .NET development on the Mac. At worst...well, at least I'll be able to set things up again the next time I have to wipe a hard drive or replace a machine.<br />
+<br />
+One of the first things that I've found in my work is that the Mono installer available from the <a href="http://www.mono-project.com">Mono Project</a> is rarely sufficient for doing any serious development work: bugs abound in the new parts of Mono (I've found a number of problems in generics), and sometimes, I simply can't resist the urge to dig in and fix them. Therefore, when setting up a new development environment, my first goal is generally to get a custom build of Mono up and running.<br />
+<br />
+Here's how I do it:<br />
+<br />
+Prerequisites:<br />
+<ul>
+    <li>Install Mac OS X--this one's kind of a no-brainer, but just for the record, I'm currently running version 10.4.10. This is the case both for my first-generation Mac Mini and my Mac Pro.</li>
+    <li>Install XCode--again, this shouldn't be too surprising, but I'm aiming for completeness, here :).</li>
+    <li>Install Fink--I've found that this is the best way to get a lot of the common Unix tools you'll need along the way. Personally, I prefer using <a href="http://finkcommander.sourceforge.net/">FinkCommander</a>, which puts a nice GUI on top of Fink. Be sure to follow all of the installation instructions on their website, or things can go mysteriously and confusingly wrong.</li>
+    <li>Install pkg-config, glib2-dev, and svn-client; you can get these through Fink.</li>
+    <li>Install and install an <a href="http://mono-project.com/downloads">official distribution of Mono</a>--sometimes it comes in handy.</li>
+</ul>
+The actual work:<br />
+<ol>
+    <li>Create a folder for your mono source. For the purpose of these instructions, I'll assume you're going to put it in <span style="font-family: courier new;">~/src/mono</span>.</li>
+    <li>Open a Terminal window and go to <span style="font-family: courier new;">~/src/mono</span>. Run the command <span style="font-family: courier new;">svn checkout svn://anonsvn.mono-project.com/source/trunk/mono svn://anonsvn.mono-project.com/source/trunk/mcs<span style="font-family: arial;">. This will download the code for the core Mono libraries and the Mono Compiler System. They'll end up in <span style="font-family: courier new;">~/src/mono/mono</span> and <span style="font-family: courier new;">~/src/mono/mcs</span>.</span></span></li>
+    <li><span style="font-family: courier new;"><span style="font-family: arial;">Create a folder into which you can install your custom build. I put mine in <span style="font-family: courier new;">/opt/mono</span>.</span></span></li>
+    <li><span style="font-family: courier new;"><span style="font-family: arial;">Run the command <span style="font-family: courier new;">cd ~/src/mono/mono &amp;&amp; ./autogen.sh --prefix=/opt/mono</span>. This step should get Mono ready to build.</span></span></li>
+    <li><span style="font-family: courier new;"><span style="font-family: arial;">You're now ready to build and install: <span style="font-family: courier new;">make &amp;&amp; make install</span>. I'd love to be able to recommend that you also insert <span style="font-family: courier new;">make check</span> in that list, but the sad fact is that Mono on MacOS actually fails a number of tests.</span></span></li>
+</ol>
+After you've done all this, you should have a working (custom) build of Mono working on your machine. You can, at any time, upgrade to the latest code by going to <span style="font-family: courier new;">~/src/mono</span> and running the command <span style="font-family: courier new;">svn update mono mcs</span>. Generally, you'll be able to jump straight to building Mono again, but you may sometimes be required to also run <span style="font-family: courier new;">autogen.sh</span>.<br />
+<br />
+Also, it's often very handy to have a script around that will set up all of your paths and whatnot to your custom build of mono. The <a href="http://www.mono-project.com/Parallel_Mono_Environments">Parallel Mono Environments</a> page on the Mono website describes this, although I had to modify mine a bit to get it working right. Here's what it looks like now:<br />
+<br />
+<span style="font-family: courier new;">#!/bin/bash</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">MONO_PREFIX=/opt/mono</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">GNOME_PREFIX=/opt/gnome</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">export LD_LIBRARY_PATH=$MONO_PREFIX/lib:/sw/lib:$LD_LIBRARY_PATH</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">export C_INCLUDE_PATH=$MONO_PREFIX/include:$GNOME_PREFIX/include:/sw/include:/Library/Frameworks/Mono</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">.framework/Versions/1.2.2.1/include/libpng</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">export ACLOCAL_PATH=$MONO_PREFIX/share/aclocal</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">export PKG_CONFIG_PATH=$MONO_PREFIX/lib/pkgconfig:$GNOME_PREFIX/lib/pkgconfig:/sw/lib/pkgconfig:/usr/</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">lib/pkgconfig:/usr/local/lib/pkgconfig:/usr/X11R6/lib/pkgconfig:/Library/Frameworks/Mono.framework/Ve</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">rsions/1.2.2.1/lib/pkgconfig</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">PATH=$MONO_PREFIX/bin:$PATH:/sw/bin</span><br style="font-family: courier new;" />
+<span style="font-family: courier new;">PS1="[mono] \w @ "<br />
+<br />
+<span style="font-family: arial;">Mine is stored in <span style="font-family: courier new;">~/mono-dev-env</span> and is invoked via source <span style="font-family: courier new;">~/mono-dev-env</span></span><br />
+</span> <br />
+That's it for my first post on setting up a development environment for Mac/.NET development. In the future, I'll go into setting up mod_mono (for ASP.NET), CruiseControl.NET (you <span style="font-style: italic;">do</span> have unit test you'd like to run regularly, don't you?), and Subversion (I realize that Subversion isn't strictly related to .NET, but I didn't have a Subversion server when I started this project, and trying to figure out how to get it set up wasn't terribly fun).
