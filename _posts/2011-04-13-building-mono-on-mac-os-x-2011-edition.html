@@ -1,0 +1,49 @@
+---
+title: Building Mono on Mac OS X (2011 Edition)
+layout: post
+---
+<p>Quite a bit has changed since I wrote my post a few years ago on building Mono for OS X. So much has changed, in fact, that I've decided that a new post on the topic is in order. These instructions assume that you're using Snow Leopard. They should work on Leopard with minimal changes, but your mileage may vary.</p>
+
+<h4>Prerequisites</h4>
+
+<p>Installing the prerequisites for Mono is much simpler than it once was. Previously, Mono had external dependencies like glib, which would mean you'd need to install MacPorts, but they've taken steps in the last year to reduce and eliminate such dependencies.</p>
+
+<h5>Git</h5>
+
+<p>If you haven't yet heard about git, stop hiding under that rock! The Mono source is hosted on GitHub, so if you want to download and build it, you'll need a copy of Git. You can acquire it <a href='http://git-scm.com/'>here</a>.</p>
+
+<h5>XCode</h5>
+
+<p>XCode 4 is now a $4.99 download in the Mac app store. If you're too cheap for that, you can still (as of the time of this writing) grab XCode 3 <a href='http://developer.apple.com/devcenter/mac/index.action'>here</a> (free registration required). A copy may also be on one of the discs that came with your Mac.</p>
+
+<h5>Mono</h5>
+
+<p>While you can (theoretically) bootstrap Mono, it's not something I recommend unless you enjoy pain. Save yourself some trouble and download the latest version <a href='http://www.go-mono.com/mono-downloads/download.html'>here</a>.</p>
+
+<h4>Get the Source</h4>
+
+<p>The Mono source code is now <a href='https://github.com/mono/mono'>hosted on GitHub</a>. Open your Terminal and clone the repository by issuing the command</p>
+
+<p><code>git clone git://github.com/mono/mono.git</code></p>
+
+<h4>Build and Install</h4>
+
+<p>First, you'll need to run <code>autogen.sh</code>. Here's how I usually invoke it:</p>
+
+<pre><code>./autogen.sh --with-sgen=no --with-xen_opt=no --prefix=/opt/mono-`git rev-parse HEAD` --with-mcs-docs=no --disable-nls</code></pre>
+
+<p>My rationale for each option is listed below.</p>
+
+<ul>
+<li><code>--with-sgen=no</code>: The Mono team considers the SGen garbage collector to be production ready, but I've had problems with it, so I still turn it off.</li>
+<li><code>--with-xen_opt=no</code>: I'm not running Xen, so there's no need for this.</li>
+<li><code>--prefix=/opt/mono-`git rev-parse HEAD`</code>: You may want to just use <code>--prefix=/opt/mono</code>. I include the git revision in the path to make it easier to keep a number of parallel installations around for testing purposes.</li>
+<li><code>--with-mcs-docs=no</code>: The documentation takes a while to build and generally won't be much different than what's in your installed copy of Mono. Save yourself some time and leave it out.</li>
+<li><code>--disable-nls</code>: I don't need this particular feature. If you do, leave it in.</li>
+</ul>
+
+<p>Assuming that <code>autogen.sh</code> completes successfully, you can now build it with</p>
+
+<p><code>make -j1</code></p>
+
+<p>Depending upon how your development environment is set up, you may not need the <code>-j1</code>. However, if your default <code>MAKEFLAGS</code> has a different <code>-j</code> option, you'll want to use this. Otherwise, the Mono build can fail in strange ways. Once this is done, run <code>sudo make install</code>, and you'll be all set!</p>

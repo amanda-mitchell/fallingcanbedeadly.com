@@ -5,13 +5,13 @@ categories: Macintosh
 ---
 <p>I've been interviewing a lot of Objective-C developers, lately. In my mind, one of the most fundamental parts of working with Objective-C is understanding how reference counting works, and I'm consistently surprised by how many people are unable to clearly describe it. In this post, I'll outline the absolute minimum that anyone working with Objective-C ought to know about reference counting. If you find yourself in an interview with me, and you can describe everything in this blog post, <del>I'll know where you got your information</del> you'll be doing better than most.</p>
 
-<h3>The Basics</h3>
+<h4>The Basics</h4>
 
 <p>Objective-C objects are reference counted. This means that each object comes with a little counter, and anyone can modify the value of this counter by calling retain (to increase the value) or release (to decrease the value). When the value of the counter reaches 0, the dealloc method is called on the object, and any memory associated with the object is reclaimed by the system.</p>
 
 <p>A good developer will make use of this system by calling retain on objects whose pointers are being stored in other objects and calling release on those objects when the pointer no longer needs to be stored. This is, in fact, the reason that we call it "reference counting": the counter is intended to indicate how many objects (or, in some cases, global variables) are holding references to the object.</p>
 
-<h3>Deadly Embraces and Retain Cycles</h3>
+<h4>Deadly Embraces and Retain Cycles</h4>
 
 <p>When two objects each call retain on the other, we call it a "deadly embrace": if no other action is taken, the objects will never be deallocated. This is widely regarded as a "bad thing".</p>
 
@@ -19,7 +19,7 @@ categories: Macintosh
 
 <p>Deadly embraces and retain cycles are dealt with by either preventing one object in the cycle from retaining its "parent" or by having explicit cleanup logic that is executed when it is certain that the objects are no longer needed. Really elite developers sometimes create proxy objects to stand in for one of the objects, although a full discussion of this technique is beyond the scope of this post.</p>
 
-<h3>Autorelease</h3>
+<h4>Autorelease</h4>
 
 <p>The autorelease method is perhaps the most widely misunderstood concept in Objective-C memory management, although in practice, it's actually relatively simple.</p>
 
@@ -27,7 +27,7 @@ categories: Macintosh
 
 <p>When you call autorelease on an object, the object searches for the most recently created NSAutoreleasePool in its thread. Assuming that it finds a pool, it adds itself to the list of objects that need to be released. When the NSAutoreleasePool is destroyed, it calls release on each object that is in its list--if an object is listed multiple times, release is called multiple times. If the object fails to find an NSAutoreleasePool, a message is logged to the console and the object is leaked (this is why you need to create an NSAutoreleasePool when doing work on a background thread).</p>
 
-<h3>Ownership and Object Creation</h3>
+<h4>Ownership and Object Creation</h4>
 
 <p>While the notion of "ownership" is not baked into the semantics of Objective-C, one object can be thought to "own" another if it has called retain on the object or has created an instance of the object via the alloc or copy methods. An object that owns another is responsible for calling release on that object when it is no longer needed.</p>
 
@@ -35,7 +35,7 @@ categories: Macintosh
 
 <p>The answer, of course, is to use the autorelease method. This allows the retain count to be a non-zero value when the method returns, and if nothing is done to keep the object alive, it will be reclaimed when the active NSAutoreleasePool is destroyed.</p>
 
-<h3>Property Getters and Setters</h3>
+<h4>Property Getters and Setters</h4>
 
 <p>Care must be taken when writing a method that sets a property value. The naive implementation of such a method looks like this:</p>
 
