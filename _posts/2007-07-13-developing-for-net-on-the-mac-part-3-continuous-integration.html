@@ -1,0 +1,83 @@
+---
+title: 'Developing for .NET on the Mac, Part 3: Continuous Integration'
+layout: post
+categories:
+- .NET
+- CruiseControl.NET
+- Macintosh
+- Mono
+- Setting up development environments
+---
+<p>If you're not already into automated testing and continuous integration, I highly recommend taking a serious look at it, although making a comprehensive argument for the practice is rather beyond the scope of this article. In any case, if you <em>are</em> into continuous integration, you'll definitely want to set up an instance of CruiseControl.NET (or whatever continuous integration server you use) on a Macintosh--the behavior of Mono varies slightly from platform to platform, so you can't really be sure that your code works properly on the Mac unless you test on a Mac.</p>
+
+<p>Let's get down to business, then, shall we?</p>
+
+<p>Prerequisite:</p>
+<ul>
+    <li>I expect that you've already followed through the two opening posts in this series. At a minimum, you need to have an Apache server with mod_mono installed on it.</li>
+</ul>
+<ol>
+    <li>Grab CruiseControl.NET from their <a href="http://sourceforge.net/project/showfiles.php?group_id=71179&amp;package_id=83198">SourceForge page</a>. Get the file named CruiseControl.NET-[Version].zip where [Version] is the latest version number.</li>
+    <li>Unzip the file and copy the contents of webdashboard into a directory that Apache can access. For the purpose of these instructions, I'll be calling it <code>/web/ccnet</code>.</li>
+    <li>Open <code>/etc/http/httpd.conf</code> in your favorite editor, and add this to the end:</li>
+</ol>
+
+{% highlight apache %}
+Alias /ccnet "/web/ccnet"
+AddMonoApplications default "/ccnet:/web/ccnet"
+&lt;Location /ccnet&gt;
+SetHandler mono
+&lt;/Location&gt;
+{% endhighlight %}
+
+<p>If you have your permissions set up correctly, you should now be able to see your CruiseControl.NET dashboard by going to http://your-server/ccnet/. But wait: we don't have the actual CruiseControl.NET service running! To get this set up, we need a few more steps:</p>
+
+<ol>
+    <li>Copy the contents of CruiseControl.NET's <code>server</code> directory into some convenient location, such as <code>/usr/local/ccnet</code>.</li>
+    <li>Edit <code>ccservice.exe.config</code> to your heart's content; make sure that you also create a valid <code>ccnet.config</code>. Neither of these tasks varies from the standard CruiseControl.NET installation procedures, so refer to the <a href="http://ccnet.thoughtworks.com">CruiseControl.NET site</a> for details on this part.</li>
+    <li>To get the service running when you first boot your Mac, create a new directory in <code>/Library/StartupItems</code> called <code>ccnet</code>.</li>
+    <li>In this directory, create two files. One should be called <code>StartupParameters.plist</code>, and the other should be called <code>ccnet</code>. Here's what needs to be in <code>StartupParameters.plist</code>:</li>
+</ol>
+
+<pre><code>{
+	Description = "CruiseControl.NET Server";
+	Provides = ("ccnet")
+	OrderPreference = "Late";
+	Messages =
+	{
+		start = "Starting CruiseControl.NET";
+		top = "Stopping CruiseControl.NET";
+		restart = "Restarting CruiseControl.NET"
+	};
+}</code></pre>
+
+<p>And here's what you put in the file called ccnet:</p>
+
+{% highlight bash %}
+#!/bin/sh
+# startup script for service CruiseControl.NET
+
+. /etc/rc.common
+
+case "$1" in
+	start)
+		ConsoleMessage "Starting CruiseControl.NET"d
+		if [ -x /usr/local/ccnet/ccservice.exe ]; then
+			/Library/Frameworks/Mono.framework/Versions/Current/bin/mono-service2 -d:/src/ccnet /usr/local/ccnet/ccservice.exe
+		fi
+		;;
+esac
+exit 0
+{% endhighlight %}
+
+<p>Now, if you restart your Mac and navigate to your CruiseControl.NET page, you should have a running instance of ccnet running whatever tests you have set it up to perform.</p>
+
+<p>A couple of notes about the StartupItem I've provided:</p>
+<ul>
+    <li>StartupItems have been replaced with some fancy new technology called launchd in OS X 10.4. However, I could never get that thing to work, and StartupItems work fine, so this is what I've got.</li>
+    <li>Obviously, I provide no warranty for this. YMMV, but this is what worked for me.</li>
+    <li>You'll note that StartupItems are also supposed to have the ability to start and restart themselves. I'm lazy—if I need to restart the service, I reboot.</li>
+    <li>On that note, I've noticed that occasionally, when rebooting, ccservice.exe doesn't initialize as it should. I've never figured out why this happens, but usually another reboot or two fixes it. It doesn't bother me because I rarely reboot my continuous integration server, but if anyone learns a workaround, let me know.</li>
+</ul>
+
+<p>Well, that's it for this post. Next time, I'll probably talk about installing Subversion on a Mac. It's not strictly a .NET topic, but it is a quite handy thing to have around, and there are a couple of gotchas to installing it in OS X.</p>
