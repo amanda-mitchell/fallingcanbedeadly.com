@@ -24,7 +24,7 @@ layout: post
 
 <p>The Mono source code is now <a href='https://github.com/mono/mono'>hosted on GitHub</a>. Open your Terminal and clone the repository by issuing the command</p>
 
-<p><code>git clone git://github.com/mono/mono.git</code></p>
+<pre><code>git clone git://github.com/mono/mono.git</code></pre>
 
 <h4>Build and Install</h4>
 
@@ -44,6 +44,6 @@ layout: post
 
 <p>Assuming that <code>autogen.sh</code> completes successfully, you can now build it with</p>
 
-<p><code>make -j1</code></p>
+<pre><code>make -j1</code></pre>
 
 <p>Depending upon how your development environment is set up, you may not need the <code>-j1</code>. However, if your default <code>MAKEFLAGS</code> has a different <code>-j</code> option, you'll want to use this. Otherwise, the Mono build can fail in strange ways. Once this is done, run <code>sudo make install</code>, and you'll be all set!</p>
