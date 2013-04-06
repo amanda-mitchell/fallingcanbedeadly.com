@@ -33,23 +33,23 @@ layout: post
 <p>For whatever reason, GoDaddy has elected to not allow you to change the ASP.Net permissions on your root folder, and 404 redirects won't work for visiting http://yourdomain.sometld/. If, like me, your blog is the primary content on your site, and this is the first thing that you'd like visitors to see, you can configure a Default.aspx that will redirect people to http://yourdomain.sometld/blog. Here's what mine looks like:</p>
 
 {% highlight aspx-cs %}
-&lt;%@ Page language="c#" %&gt;
-&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt;
+<%@ Page language="c#" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" >
 
-&lt;html&gt;
-	&lt;head runat="server"&gt;
-		&lt;title&gt;&lt;/title&gt;
-		&lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;
-		&lt;meta name="CODE_LANGUAGE" Content="C#"&gt;
-		&lt;meta name=vs_defaultClientScript content="JavaScript"&gt;
-		&lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;
-	&lt;/head&gt;
-	&lt;body MS_POSITIONING="GridLayout"&gt;
-		&lt;form id="Form1" method="post" runat="server"&gt;
-			&lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt;
-		&lt;/form&gt;
-	&lt;/body&gt;
-&lt;/html&gt;
+<html>
+	<head runat="server">
+		<title></title>
+		<meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1">
+		<meta name="CODE_LANGUAGE" Content="C#">
+		<meta name=vs_defaultClientScript content="JavaScript">
+		<meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5">
+	</head>
+	<body MS_POSITIONING="GridLayout">
+		<form id="Form1" method="post" runat="server">
+			<% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %>
+		</form>
+	</body>
+</html>
 {% endhighlight %}
 
 <p>Anyway, this is how I have my blog set up, and I would assume that it would work for most users, but I make no guarantees to this effect. Let me know how it turns out for you!</p>
