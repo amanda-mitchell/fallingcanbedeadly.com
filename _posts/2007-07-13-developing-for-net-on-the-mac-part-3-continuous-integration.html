@@ -25,9 +25,9 @@ categories:
 {% highlight apache %}
 Alias /ccnet "/web/ccnet"
 AddMonoApplications default "/ccnet:/web/ccnet"
-&lt;Location /ccnet&gt;
-SetHandler mono
-&lt;/Location&gt;
+<Location /ccnet>
+	SetHandler mono
+</Location>
 {% endhighlight %}
 
 <p>If you have your permissions set up correctly, you should now be able to see your CruiseControl.NET dashboard by going to http://your-server/ccnet/. But wait: we don't have the actual CruiseControl.NET service running! To get this set up, we need a few more steps:</p>
