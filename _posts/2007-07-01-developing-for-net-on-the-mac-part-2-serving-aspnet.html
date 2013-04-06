@@ -1,0 +1,37 @@
+---
+title: 'Developing for .NET on the Mac, Part 2: Serving ASP.NET Pages'
+layout: post
+categories:
+- .NET
+- Macintosh
+- Mono
+- Setting up development environments
+---
+<p><em>[Updated 2/11/09: Included information about my experience in making a fresh build on a fresh install of Leopard]</em></p>
+
+<p>Getting a Macintosh to serve up ASP.NET content is actually pretty simple. Mono's primary support for ASP.NET comes through an Apache plugin called mod_mono. This is very good news for the Mac user because Apache version 1.3 comes as part of Tiger. As long as you don't need to run other plugins that require newer versions of Apache (like Subversion), setting up ASP.NET on a Mac could scarcely be easier.</p>
+
+<p>Prerequisites:</p>
+<ul>
+    <li>I'm assuming that you've already read and followed <a href="http://www.fallingcanbedeadly.com/blog/archive/2007/06/29/developing-for-.net-on-the-mac-part-1-building-mono.aspx">Part 1</a> of this series. At a minimum, you should have:
+    <ul>
+        <li>The Subversion client</li>
+        <li>A directory for Subversion checkouts (which I refer to as <code>~/src/mono</code>)</li>
+        <li>A binary distribution of Mono from their <a href="http://www.mono-project.com/downloads">website</a></li>
+    </ul>
+    </li>
+</ul>
+<p>Here's what you need to do:</p>
+<ol>
+    <li>Open a terminal and go to <code>~/src/mono</code>.</li>
+    <li>Check out the code for mod_mono. This command should get the job done: <code>svn checkout svn://anonsvn.mono-project.com/source/trunk/mod_mono</code>.</li>
+    <li>Go to <code>~/src/mono/mod_mono</code> and run the command <code>./autogen.sh --prefix=/Library/Frameworks/Mono.framework/Versions/Current</code>.</li>
+<li><em>Update: on a fresh install of Leopard, I found that <code>autogen.sh</code> and <code>configure</code> were failing because a tool named <code>libtoolize</code> was renamed to <code>glibtoolize</code>, and the configuration scripts were not configured to handle this. You can fix the problem either by creating an alias for <code>libtoolize</code> or by editing the single line in <code>autogen.sh</code> that refers to <code>libtoolize</code> to point to <code>glibtoolize</code>, instead; furthermore, based on what I read <a href="http://www.gotmono.com/cgi-bin/yabb/YaBB.pl?board=INSTALL;action=display;num=1201877102">here</a>, it seems that the configuration script fails to detect the 64-bit architecture on some Macs. If this happens to you (you'll know because Apache will fail to start up), run <code>CFLAGS="-m64" ./autogen.sh --prefix=/Library/Frameworks/Mono.framework/Versions/Current</code> followed by a <code>make clean</code> and <code>make</code>.</i></li>
+    <li>Follow this by running <code>make &amp;&amp; make install</code>. Note that you will probably need elevated permission to complete the installation ste.</li>
+    <li>Edit <code>/etc/httpd/httpd.conf</code> and add this to the end of the file: <code>Include /private/etc/httpd/mod_mono.conf</code>. <em>Update: in Leopard, this is <code>/etc/apache2/httpd.conf</code>.</em></li>
+    <li>Open System Preferences and select "Sharing".</li>
+    <li>Check the box next to "Personal Web Sharing".</li>
+</ol>
+<p>At this point, you should have basic support for ASP.NET on your Mac. The last step that you performed turned on Apache, which by default will look for content in /Library/WebServer/Documents, and putting aspx files ino this folder should result in them being handled by mod_mono.</p>
+
+<p>It should be noted that many applications will require more advanced setup than this (for example, applications like the CruiseControl.NET web dashboard want to be able to handle <em>all</em> web requests for their directory, not just the ones pointing to aspx files), but this is a topic for another post.</p>
