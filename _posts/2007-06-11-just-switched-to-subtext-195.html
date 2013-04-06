@@ -31,20 +31,22 @@ layout: post
 </ol>
 <p>A note about automatic redirecting:</p>
 <p>For whatever reason, GoDaddy has elected to not allow you to change the ASP.Net permissions on your root folder, and 404 redirects won't work for visiting http://yourdomain.sometld/. If, like me, your blog is the primary content on your site, and this is the first thing that you'd like visitors to see, you can configure a Default.aspx that will redirect people to http://yourdomain.sometld/blog. Here's what mine looks like:</p>
-<p><font face="Courier New">&lt;%@ Page language="c#" %&gt;<br />
-&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt; </font></p>
-<p><font face="Courier New">&lt;html&gt;<br />
-&lt;head runat="server"&gt;<br />
-&lt;title&gt;&lt;/title&gt;<br />
-&lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;<br />
-&lt;meta name="CODE_LANGUAGE" Content="C#"&gt;<br />
-&lt;meta name=vs_defaultClientScript content="JavaScript"&gt;<br />
-&lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;<br />
-&lt;/head&gt;<br />
-&lt;body MS_POSITIONING="GridLayout"&gt;<br />
-&lt;form id="Form1" method="post" runat="server"&gt;<br />
-&lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt; <br />
-&lt;/form&gt;<br />
-&lt;/body&gt;<br />
-&lt;/html&gt;</font></p>
+<pre><code>&lt;%@ Page language="c#" %&gt;
+&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN" &gt;
+
+&lt;html&gt;
+	&lt;head runat="server"&gt;
+		&lt;title&gt;&lt;/title&gt;
+		&lt;meta name="GENERATOR" Content="Microsoft Visual Studio .NET 7.1"&gt;
+		&lt;meta name="CODE_LANGUAGE" Content="C#"&gt;
+		&lt;meta name=vs_defaultClientScript content="JavaScript"&gt;
+		&lt;meta name=vs_targetSchema content="http://schemas.microsoft.com/intellisense/ie5"&gt;
+	&lt;/head&gt;
+	&lt;body MS_POSITIONING="GridLayout"&gt;
+		&lt;form id="Form1" method="post" runat="server"&gt;
+			&lt;% Response.Redirect("http://www.fallingcanbedeadly.com/blog"); %&gt;
+		&lt;/form&gt;
+	&lt;/body&gt;
+&lt;/html&gt;</pre></code>
+
 <p>Anyway, this is how I have my blog set up, and I would assume that it would work for most users, but I make no guarantees to this effect. Let me know how it turns out for you!</p>
