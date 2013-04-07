@@ -1,0 +1,30 @@
+---
+layout: nil
+---
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+  <title>daveBlog</title>
+  <link href="http://www.fallingcanbedeadly.com/"/>
+  <link type="application/atom+xml" rel="self" href="http://www.fallingcanbedeadly.com/atom.xml"/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>http://www.fallingcanbedeadly.com.com/</id>
+  <author>
+    <name>David Mitchell</name>
+  </author>
+
+  {% for post in site.posts %}
+  <entry>
+    <id>http://www.fallingcanbedeadly.com,{{ post.id }}</id>
+    <link type="text/html" rel="alternate" href="http://www.fallingcanbedeadly.com{{ post.url }}"/>
+    <title>{{ post.title | xml_escape }}</title>
+    <updated>{{ post.date | date_to_xmlschema }}</updated>
+    <author>
+      <name>David Mitchell</name>
+      <uri>http://www.fallingcanbedeadly.com/</uri>
+    </author>
+    <content type="html">{{ post.content | xml_escape }}</content>
+  </entry>
+  {% endfor %}
+ 
+</feed>
