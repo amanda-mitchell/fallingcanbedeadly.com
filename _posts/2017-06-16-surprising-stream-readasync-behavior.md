@@ -1,5 +1,5 @@
 ---
-title: Stream.ReadAsync Doesn't Always Support Cancellation
+title: What Happens in the Default Implementation of Stream.ReadAsync Will Shock You
 layout: post
 ---
 
