@@ -52,19 +52,21 @@ Several of the images that I used were licensed under Creative Commons. Here are
 ### Other Links
 
 - Projects advertising support for Mono
-  _ [ServiceStack](http://servicestack.net/)
-  _ [Nancy](http://github.com/NancyFx/Nancy) \* [SignalR](http://github.com/SignalR/SignalR)
+  - [ServiceStack](http://servicestack.net/)
+  - [Nancy](http://github.com/NancyFx/Nancy)
+  - [SignalR](http://github.com/SignalR/SignalR)
 - Sites known to be using Mono
-  _ [Xamarin](http://xamarin.com) (the HTTP headers say they're using nginx and ASP.NET MVC 3)
-  _ [ServiceStack](https://twitter.com/demisbellot/status/349585542641487872) (problems with the setup are indicated [here](https://twitter.com/demisbellot/status/349586375428931586))
+  - [Xamarin](http://xamarin.com) (the HTTP headers say they're using nginx and ASP.NET MVC 3)
+  - [ServiceStack](https://twitter.com/demisbellot/status/349585542641487872) (problems with the setup are indicated [here](https://twitter.com/demisbellot/status/349586375428931586))
 - Documentation for setup
-  _ [Forms Authentication on Mono](http://www.mono-project.com/Config_system_web_authentication)
-  _ [Getting HTTPS to work on Mono](http://www.mono-project.com/FAQ_Security)
+  - [Forms Authentication on Mono](http://www.mono-project.com/Config_system_web_authentication)
+  - [Getting HTTPS to work on Mono](http://www.mono-project.com/FAQ_Security)
 - Code that I wrote while researching this topic
-  _ [How to parse a .NET Forms Authentication Cookie](https://gist.github.com/5350992)
-  _ [Shim between the .NET Profiling API and the New Relic Profiler](https://github.com/david-mitchell/NewRelicShim)
-  _ ["Rough Draft" of method rewriting API in Mono](https://github.com/LogosBible/mono/tree/methodrewrite)
-  _ [New Relic profiler for Mono](https://github.com/david-mitchell/NewRelicProfiler)
+  - [How to parse a .NET Forms Authentication Cookie](https://gist.github.com/5350992)
+  - [Shim between the .NET Profiling API and the New Relic Profiler](https://github.com/david-mitchell/NewRelicShim)
+  - ["Rough Draft" of method rewriting API in Mono](https://github.com/LogosBible/mono/tree/methodrewrite)
+  - [New Relic profiler for Mono](https://github.com/david-mitchell/NewRelicProfiler)
 - Other
-  _ [Joke about yak-shaving on twitter](https://twitter.com/carlfish/status/357289566866120705)
-  _ [New Relic's lack of support for Mono](https://newrelic.com/docs/dotnet/new-relic-for-net) \* [Limitations of the .NET Profiling API](http://msdn.microsoft.com/en-us/library/bb384493.aspx)
+  - [Joke about yak-shaving on twitter](https://twitter.com/carlfish/status/357289566866120705)
+  - [New Relic's lack of support for Mono](https://newrelic.com/docs/dotnet/new-relic-for-net)
+  - [Limitations of the .NET Profiling API](http://msdn.microsoft.com/en-us/library/bb384493.aspx)
