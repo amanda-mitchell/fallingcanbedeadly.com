@@ -63,9 +63,9 @@ Several of the images that I used were licensed under Creative Commons. Here are
   - [Getting HTTPS to work on Mono](http://www.mono-project.com/FAQ_Security)
 - Code that I wrote while researching this topic
   - [How to parse a .NET Forms Authentication Cookie](https://gist.github.com/5350992)
-  - [Shim between the .NET Profiling API and the New Relic Profiler](https://github.com/david-mitchell/NewRelicShim)
+  - [Shim between the .NET Profiling API and the New Relic Profiler](https://github.com/amanda-mitchell/NewRelicShim)
   - ["Rough Draft" of method rewriting API in Mono](https://github.com/LogosBible/mono/tree/methodrewrite)
-  - [New Relic profiler for Mono](https://github.com/david-mitchell/NewRelicProfiler)
+  - [New Relic profiler for Mono](https://github.com/amanda-mitchell/NewRelicProfiler)
 - Other
   - [Joke about yak-shaving on twitter](https://twitter.com/carlfish/status/357289566866120705)
   - [New Relic's lack of support for Mono](https://newrelic.com/docs/dotnet/new-relic-for-net)
