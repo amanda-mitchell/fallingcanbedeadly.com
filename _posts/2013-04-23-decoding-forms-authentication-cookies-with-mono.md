@@ -28,7 +28,7 @@ build of Mono) had no effect—I was still treated as an unauthenticated
 user.
 
 Eventually, after quite a bit of digging around, I learned that the
-binary format for .NET's Forms Authentication cookie is *undocumented*,
+binary format for .NET's Forms Authentication cookie is _undocumented_,
 so Mono had to implement a reasonable—yet incompatible—alternative
 format. Furthermore, if you choose to encrypt the cookie, .NET adds an
 extra 28 bytes of padding to the cookie using an unspecified hash
@@ -40,9 +40,10 @@ In any case, I spent a lazy Saturday afternoon poking around with the
 format and arrived at a method of decoding the cookie, which is included
 here for your reading pleasure:
 
-<script src='https://gist.github.com/david-mitchell/5350992.js'>
+<script src='https://gist.github.com/5350992.js'>
 </script>
-<noscript>If you had Javascript enabled, you'd see a <a href='https://gist.github.com/david-mitchell/5350992'>gist</a> here.</noscript>
+
+<noscript>If you had Javascript enabled, you'd see a <a href='https://gist.github.com/5350992'>gist</a> here.</noscript>
 
 As you can see, it's very proof-of-concepty, and it assumes specific
 encryption and signing algorithms, but it gets the job done and should
@@ -51,4 +52,3 @@ Global.asax.cs, provide your favorite implementation of base-16 string
 to bytes, and you're good to go.
 
 Happy hacking!
-

@@ -12,7 +12,7 @@ Although the core React Native team doesn't show any signs of reversing their st
 I haven't been able to find any mention of it in the official documentation, but React Native allows customizing [several parts of the packager pipeline](https://github.com/facebook/react-native/blob/29d9c35e122861d86c70b1e27a6e34eda4d82369/local-cli/util/Config.js#L145-L165), including the list of acceptable file extensions for source files.
 
 Configuration options are specified in much the same way as in webpack: you create a Javascript module the exports an object containing all of the fields that you want to override.
-It *appears* that there are two ways to provide this file to React Native, but one of them is a trap.
+It _appears_ that there are two ways to provide this file to React Native, but one of them is a trap.
 
 ## How Not To Do It
 
@@ -37,7 +37,8 @@ This means that if you create a file with that name at your project root, it wil
 So how do we use this knowledge to enable `.jsx` files?
 We just add this config:
 
-<script src="https://gist.github.com/david-mitchell/db396f354a9626abac78ee1d95c74a9f.js"></script>
-<noscript>If you had Javascript enabled, you'd see a <a href='https://gist.github.com/david-mitchell/db396f354a9626abac78ee1d95c74a9f.js'>gist</a> here.</noscript>
+<script src="https://gist.github.com/db396f354a9626abac78ee1d95c74a9f.js"></script>
+
+<noscript>If you had Javascript enabled, you'd see a <a href='https://gist.github.com/db396f354a9626abac78ee1d95c74a9f.js'>gist</a> here.</noscript>
 
 Now you can use `.jsx` files with abandon!

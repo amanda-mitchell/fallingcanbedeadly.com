@@ -4,13 +4,13 @@ layout: nil
 <?xml version="1.0"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
  
-  <title>daveBlog</title>
+  <title>Mandy's Tech Blog</title>
   <link href="http://www.fallingcanbedeadly.com/"/>
   <link type="application/atom+xml" rel="self" href="http://www.fallingcanbedeadly.com/atom.xml"/>
   <updated>{{ site.time | date_to_xmlschema }}</updated>
   <id>http://www.fallingcanbedeadly.com.com/</id>
   <author>
-    <name>David Mitchell</name>
+    <name>Amanda Mitchell</name>
   </author>
 
   {% for post in site.posts %}
@@ -20,7 +20,7 @@ layout: nil
     <title>{{ post.title | xml_escape }}</title>
     <updated>{{ post.date | date_to_xmlschema }}</updated>
     <author>
-      <name>David Mitchell</name>
+      <name>Amanda Mitchell</name>
       <uri>http://www.fallingcanbedeadly.com/</uri>
     </author>
     <content type="html">{{ post.content | xml_escape }}</content>

@@ -4,7 +4,7 @@ layout: nil
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
-		<title>daveBlog</title>
+		<title>Mandy's Tech Blog</title>
 		<description>There is a madness to my method</description>
 		<link>http://www.fallingcanbedeadly.com/</link>
 		<atom:link href="http://www.fallingcanbedeadly.com/rss.xml" rel="self" type="application/rss+xml" />
