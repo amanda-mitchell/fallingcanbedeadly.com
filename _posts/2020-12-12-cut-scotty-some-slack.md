@@ -119,7 +119,7 @@ Not only are these little changes unlikely to generate much notice, they also gi
 
 If you need some more specific ideas, try some of these:
 
-* Ask a more senior coworker about the books, blogs, or Twitter personalities that have had the greatest impact on their thinking.
+* Ask a more senior colleague about the books, blogs, or Twitter personalities that have had the greatest impact on their thinking.
 * Find an extensibility point in a module you’re working on that’s no longer used—and get rid of it.
 * Fix some inefficient database queries that are just slightly out of the way.
 * Investigate the history of a confusing bit of code, and either add some comments or improve its design.
